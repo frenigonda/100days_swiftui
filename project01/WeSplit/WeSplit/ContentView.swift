@@ -8,48 +8,54 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tapCount = 0
-    @State private var name = ""
+    @State private var checkAmount = 0.0
+    @State private var numberOfPeople = 1
+    @State private var tipPercentage = 0
+    @FocusState private var isKeyboardVisible: Bool
     
-    let students = ["Harry", "Hermione", "Ron"]
-    @State private var selectedStudent = "Harry"
+    private let tipPecentages = [0, 10, 15, 20, 25]
+    private let localCurrency = Locale.current.currency?.identifier ?? "USD"
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Hey") {
-                    Text("Hello, world!")
-                    Text("Hello, world!")
-                }
-                
-                Section("Tap count") {
-                    Button("Tap count: \(tapCount)") {
-                        self.tapCount += 1
-                    }
-                }
-                
-                Section("Name") {
-                    TextField("What's your name?", text: $name)
-                    Text("Your name is \(name)")
-                }
-                
-                Section("Views in a loop") {
-                    ForEach(1..<6) { number in
-                        Text("Row \(number)")
-                    }
-                }
-                
-                Section("Hogwarts students") {
-                    Picker("Select your student", selection: $selectedStudent) {
-                        ForEach(students, id: \.self) {
-                            Text($0)
+                Section {
+                    TextField(
+                        "Enter check amount",
+                        value: $checkAmount,
+                        format: .currency(code: localCurrency)
+                    )
+                    .keyboardType(.decimalPad)
+                    .focused($isKeyboardVisible)
+                    
+                    Picker("Tip", selection: $tipPercentage) {
+                        ForEach(tipPecentages, id: \.self) {
+                            Text($0, format: .percent)
                         }
                     }
+                    
+                    Picker("Number of people", selection: $numberOfPeople) {
+                        ForEach(1..<11) {
+                            Text("\($0)")
+                        }
+                    }
+                    //                    .pickerStyle(.navigationLink)
+                    //                    .pickerStyle(.segmented)
+                }
+                
+                Section("Each of you should pay") {
+                    Text("\(calculatePayment())")
                 }
             }
-            .navigationTitle("SwiftUI")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationTitle("WeSplit")
         }
+    }
+    
+    
+    private func calculatePayment() -> String {
+        let resultCheck = checkAmount * (1.0 + Double(tipPercentage) / 100)
+        let payment = resultCheck / Double(numberOfPeople + 1)
+        return payment.formatted(.currency(code: localCurrency))
     }
 }
 
