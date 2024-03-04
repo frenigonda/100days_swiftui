@@ -48,6 +48,23 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("WeSplit")
+            .toolbar {
+                if isKeyboardVisible {
+                    Button("Done") {
+                        isKeyboardVisible = false
+                    }
+                }
+            }
+//            .simultaneousGesture(
+//                TapGesture()
+//                    .onEnded { _ in
+//                        if isKeyboardVisible {
+//                            isKeyboardVisible = false
+//                        }
+//                        print("I'm tapped")
+//                    },
+//                including: .all
+//            )
         }
     }
     
